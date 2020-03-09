@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+#############
 # Imports
 import rospy
 import roslib
@@ -7,40 +8,40 @@ import roslib
 # Messages
 from std_msgs.msg import Float32, Float64
 
-#############
+
 #Input: Determine node input
 #Output: Determine node output
+#Description: Add description
 #############
 
-# Create node class
 class ClassName:
 	def __init__(self):
-        #Initialize node
+        # Initialize node
 		rospy.init_node('node_name')
 
-		#Subscribers
+		# Subscribers
 		self.local_message_name_sub = rospy.Subscriber('message_name_sub', Float64, self.message_name_callback)
 
-		#Publishers
+		# Publishers
 		self.local_message_name_pub = rospy.Publisher('message_name_pub', Float32, queue_size = 10)
 
-		#Parameters - set
+		# Parameters - set
 		self.param = rospy.get_param('~parameter_name', 0.18)
 		self.rate = rospy.get_param('~rate',50)
 
-        #Parameters - inherited
+        # Parameters - inherited
 		self.param_inherited = rospy.get_param('~inherited_param','/message')
 
-		#Initialization - values
+		# Initialization - values
 		self.value_that_needs_to_be_set = 0;
-		self.time_prev_update = rospy.Time.now(); #Refresh time
+		self.time_prev_update = rospy.Time.now(); #refresh time
 
-    #Message reader
+    # Message reader
 	def message_name_callback(self, msg):
-		self.message_name = msg.data #Reads data from message
+		self.message_name = msg.data #reads data from message
 
 
-	#Class functions
+	# Class functions
     def fcn(self, par1, par2):
         #Generic class function
         #Input
@@ -67,6 +68,7 @@ class ClassName:
         return(par)
 
     def fcn_pub(self, par1, par2):
+        #Generic class function with publishing
         #Input
         par = self.par1;
         #Pub_construct
@@ -77,29 +79,29 @@ class ClassName:
 
     def update(self):
         #Calls the updates for every spin, passes the parameters
-		self.par = self.fcn_update();   #updater
-		self.fcn(self.par)              #par passer
-		self.fcn_pub(self.par)          #pub par passer
+		self.par = self.fcn_update();       #updater
+		self.fcn(self.par)                  #par passer
+		self.fcn_pub(self.par)              #pub par passer
 
     def spin(self):
         #Node instance
-		rospy.loginfo("Start node_name")#logger handle
-		rate = rospy.Rate(self.rate)    #declares frequency of node
-		rospy.on_shutdown(self.shutdown)#shutdown function on node shutdown
+		rospy.loginfo("Start node_name")    #logger handle
+		rate = rospy.Rate(self.rate)        #declares frequency of node
+		rospy.on_shutdown(self.shutdown)    #shutdown function on node shutdown
         #Loop
 		while not rospy.is_shutdown():
-			self.update();              #update state
-			rate.sleep()                #sleep based on frequency
+			self.update();                  #update state
+			rate.sleep()                    #sleep based on frequency
 		rospy.spin()
 
     def shutdown(self):
         #Shutdown handler
-		rospy.loginfo("Stop diffdrive_odom") #logger handle
+		rospy.loginfo("Stop diffdrive_odom")#logger handle
 		rospy.sleep(1)
 
 def main():
-	class_name = ClassName();       #class assign
-	class_name.spin()               #start spin loop
+	class_name = ClassName();               #class assign
+	class_name.spin()                       #start spin loop
 
 if __name__ == '__main__':
     main();
