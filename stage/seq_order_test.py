@@ -10,6 +10,11 @@ import numpy as np
 #############
 test_real = np.array([[2,5,8,11],[1,3,6,9,12],[4,7,10]])
 test = np.array([[2,5,8,11],[3,6,9,12],[4,7,10,13]])
+datax = np.array([1,2,3,4,5])
+datay = np.array([1,2,3,4,5])
+datan = np.array([[None,2,5,8,11],[1,3,6,9,12],[None,4,7,10,None]])
+datan_worst = np.array([[None,2,6,10,14],[None,3,7,11,15],[1,4,8,12,None],[None,5,9,13,None]])
+
 cols = len(test_real)
 rows_in_cols = []
 for col in range(0, cols):
@@ -51,7 +56,9 @@ class Button:
         self.midcol = rows_in_cols[1:-1]
         for col in self.midcol:
             if col > self.leftcol and col > self.rightcol:
-                col_norm = foo[-1]
+               self.col_norm = foo[-1*(col-1)]
+        
+            
 
             
 panel = Panel()

@@ -47,8 +47,11 @@ class Detection:
     def find_classes(self,axis):
         if axis == "row":
             axis = 1
-        else:
+        elif axis == "col":
             axis = 0
+        else:
+            raise NameError("argument must be row or col")
+
         i = -1
         sames = []
         comp_val_history = []
@@ -67,7 +70,24 @@ class Detection:
             comp_val_history.append(rounddown(compare_val*10))
         sames = np.array(sames)
         sames_unique = np.unique(sames)
-        return sames_unique, comp_val_history
+        return sames_unique, sames, comp_val_history
+
+    def order_unique_coord(self,coord,comp_hist,type):
+        rearranged = []
+        out = []
+        indexing = np.argsort(comp_hist)
+        for j in indexing:
+            rearranged.append(coord[j])
+        _, idx = np.unique(rearranged, return_index=True)
+        for j in np.sort(idx):
+            out.append(rearranged[j])
+        if type == "cols":
+            self.cols = out
+        elif type == "rows":
+            self.rows = out
+        else:
+            raise NameError("type must be a (rows) or (cols)")
+        return out
 
 class Button:
     def __init__(self,x_raw,y_raw,n_raw):
@@ -107,10 +127,25 @@ class Panel:
         return buttons
 
 det = Detection(data,but_w,but_h)
-rows, r_val_hist = det.find_classes("row")
-cols, c_val_hist = det.find_classes("column")
-print(np.array(r_val_hist),np.sort(np.array(c_val_hist)))
-#buttons = det.create_button(data)
-#panel = Panel(buttons,rows,cols)
-#for i in buttons:
-    #print(i.row, i.col)
+rows, rows_all,r_val_hist = det.find_classes("row")
+cols, cols_all,c_val_hist = det.find_classes("col")
+
+cols_ordered = det.order_unique_coord(cols_all,c_val_hist,"cols")
+rows_ordered = det.order_unique_coord(rows_all,r_val_hist,"rows")
+print(rows_ordered, cols_ordered)
+indexing = np.argsort(c_val_hist)
+cols_rearranged = []
+cols = []
+for i in indexing:
+    cols_rearranged.append(cols_all[i])
+_, idx = np.unique(cols_rearranged, return_index=True)
+idx = np.sort(idx)
+for i in idx:
+    cols.append(cols_rearranged[i])
+
+
+    
+buttons = det.create_button(data)
+panel = Panel(buttons,rows,cols)
+for i in buttons:
+    print(i.row, i.col)
