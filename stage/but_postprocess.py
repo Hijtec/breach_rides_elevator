@@ -2,7 +2,7 @@
 #Imports
 import numpy as np
 from math import floor as rounddown
-#Input: Raw detections of buttons
+#Input: Raw detections of buttons, button width and height
 #Output: Proposed corrected numpy array of elevator panel
 #Description: 
 #Requisities: all labeled buttons were detected, buttons are ordered from bottom to top
@@ -11,7 +11,7 @@ from math import floor as rounddown
 dtype = [('x', float),( 'y', float),( 'n', int)]
 data = np.array([(0.625,0.11,1),
                 (0.12,0.35,2),(0.39,0.36,3),(0.61,0.38,4),(0.89,0.32,5),
-                (0.14,0.53,6),(0.40,0.52,7),(0.62,0.56,8),(0.90,0.58,9),
+                (0.14,0.53,8),(0.40,0.52,7),(0.62,0.56,8),(0.90,0.58,9),
                 (0.11,0.72,10),(0.35,0.71,11),(0.58,0.74,12),(0.82,0.71,13),
                 (0.10,0.93,14),(0.37,0.88,15)],
                 dtype=dtype)
@@ -113,39 +113,15 @@ class Panel:
             j +=1
             for item in col:
                 buttons[item].col = j
-    def assign_row_col(self,buttons,rows,cols):
-        i = 0
-        for row in rows:
-            i +=1
-            for item in row:
-                buttons[item].row = i
-        j = 0
-        for col in cols:
-            j +=1
-            for item in col:
-                buttons[item].col = j
-        return buttons
-
+            
+#Istance of Detection class
 det = Detection(data,but_w,but_h)
+#Its functions
 rows, rows_all,r_val_hist = det.find_classes("row")
 cols, cols_all,c_val_hist = det.find_classes("col")
-
 cols_ordered = det.order_unique_coord(cols_all,c_val_hist,"cols")
 rows_ordered = det.order_unique_coord(rows_all,r_val_hist,"rows")
 print(rows_ordered, cols_ordered)
-indexing = np.argsort(c_val_hist)
-cols_rearranged = []
-cols = []
-for i in indexing:
-    cols_rearranged.append(cols_all[i])
-_, idx = np.unique(cols_rearranged, return_index=True)
-idx = np.sort(idx)
-for i in idx:
-    cols.append(cols_rearranged[i])
 
-
-    
-buttons = det.create_button(data)
-panel = Panel(buttons,rows,cols)
-for i in buttons:
-    print(i.row, i.col)
+buttons = det.create_button(data) #Create an instance of buttons (calls Button class ->)
+panel = Panel(buttons,rows_ordered,cols_ordered)  #Create an instance of panel (gives Buttons rows and columns)
