@@ -5,14 +5,20 @@ from math import floor as rounddown
 #Input: Raw detections of buttons, button width and height
 #Output: Proposed corrected numpy array of elevator panel
 #Description: 
-#Requisities: all labeled buttons were detected, buttons are ordered from bottom to top
+#Requisities: all labeled buttons were detected, buttons are ordered from bottom to top, buttons are labeled by integer numbers
 #Notes:
 #############
 dtype = [('x', float),( 'y', float),( 'n', int)]
 data = np.array([(0.625,0.11,1),
                 (0.12,0.35,2),(0.39,0.36,3),(0.61,0.38,4),(0.89,0.32,5),
-                (0.14,0.53,8),(0.40,0.52,7),(0.62,0.56,8),(0.90,0.58,9),
+                (0.14,0.53,6),(0.40,0.52,7),(0.62,0.56,8),(0.90,0.58,9),
                 (0.11,0.72,10),(0.35,0.71,11),(0.58,0.74,12),(0.82,0.71,13),
+                (0.10,0.93,14),(0.37,0.88,15)],
+                dtype=dtype)
+data_OCR = np.array([(0.625,0.11,1),
+                (0.12,0.35,2),(0.39,0.36,3),(0.61,0.38,4),(0.89,0.32,5),
+                (0.14,0.53,8),(0.40,0.52,7),(0.62,0.56,8),(0.90,0.58,8),
+                (0.11,0.72,1),(0.35,0.71,11),(0.58,0.74,12),(0.82,0.71,13),
                 (0.10,0.93,14),(0.37,0.88,15)],
                 dtype=dtype)
 but_w = 0.25
@@ -102,6 +108,8 @@ class Button:
 class Panel:
     def __init__(self,buttons,rows,cols):
         self.buttons = buttons
+        self.rows = rows
+        self.cols = cols
         #assign rows and cols
         i = 0
         for row in rows:
@@ -113,7 +121,57 @@ class Panel:
             j +=1
             for item in col:
                 buttons[item].col = j
-            
+
+class Template:
+    def __init__(self,panel):
+        self.n_rank = None
+        self.priority_lr = None
+        self.priority_vh = None
+        self.rows = panel.rows
+        self.cols = panel.cols
+        self.panel = panel
+    
+    def count_rank(self):
+        self.rank_l = self.count_lr(self.panel,"left")
+        self.rank_r = self.count_lr(self.panel,"right")
+        self.rank_v = self.count_vh(self.panel,"vertical")
+        self.rank_h = self.count_vh(self.panel,"horizontal")
+    
+    def count_lr(self,order):
+        if order == "left":
+            axis = 1
+        elif order == "right":
+            axis = -1
+        else:
+            raise NameError("order must be either left or right")
+        listed = []
+        for row in self.rows:
+            for i in row:
+                listed.append(i)
+        n_order = 0
+        if axis == 1:
+            curr = 0
+            foll = curr
+        if axis == -1:
+            curr = -1
+            foll = curr
+        listed = listed
+        print(listed)
+        for number in listed:
+            try:
+                foll += axis
+                if listed[curr] < listed[foll]:
+                    n_order += 1
+                else:
+                    n_order += 0
+                print(curr,foll)
+                curr = foll
+            except:
+                pass
+        return n_order
+        
+
+
 #Istance of Detection class
 det = Detection(data,but_w,but_h)
 #Its functions
@@ -125,3 +183,10 @@ print(rows_ordered, cols_ordered)
 
 buttons = det.create_button(data) #Create an instance of buttons (calls Button class ->)
 panel = Panel(buttons,rows_ordered,cols_ordered)  #Create an instance of panel (gives Buttons rows and columns)
+listed = []
+for row in panel.rows:
+            for i in row:
+                listed.append(i)
+
+temp = Template(panel)
+print(temp.count_lr("right"))
