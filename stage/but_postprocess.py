@@ -145,10 +145,10 @@ class Template:
         else:
             raise NameError("order must be either left or right")
         #Making an iterable list to count with
-        listed = []
+        listed_numbers = []
         for row in self.rows:
             for i in row:
-                listed.append(i)
+                listed_numbers.append(i)
         #Defining starting positions
         if axis == 1:
             curr = 0
@@ -158,10 +158,10 @@ class Template:
             foll = curr
         n_order = 0
         #Iterate through the list
-        for number in listed:
+        for number in listed_numbers:
             try:
                 foll += axis
-                if listed[curr] < listed[foll]:
+                if listed_numbers[curr] < listed_numbers[foll]:
                     n_order += 1
                 else:
                     n_order += 0
@@ -185,11 +185,12 @@ class Template:
         for row in self.rows:
             avg_in_row += len(row)
         avg_in_row = avg_in_row/len(self.rows)
-
-
-
-
-
+        if avg_in_row > self.rows[0]: #compare if the first row has less members
+            del_index = self.rows[0][:]
+            suppressed = np.delete(self.rows, del_index)
+        else:
+            suppressed = self.rows
+        return suppressed
 
 #Istance of Detection class
 det = Detection(data,but_w,but_h)
@@ -212,4 +213,3 @@ avg_in_row = 0
 for row in temp.rows:
     avg_in_row += len(row)
 avg_in_row = avg_in_row/len(temp.rows)
-print(len(panel.rows))
