@@ -1,13 +1,28 @@
-#############
-#Imports
-import numpy as np
+"""TODO:A postprocessing module for button recognition.
+
+#Input:         Raw detections of buttons(array), button width and height(floats)
+#Output:        Proposed corrected array of elevator panel(numpy.array)
+#Assumptions:   TODO:All numbered buttons were detected(array/list of lists), localized(float) and labeled(int)
+                Buttons detection data is ordered from bottom to top (y_min -> y_max)
+
+This script utilises data given from a recognition module and feeds it
+for postprocessing in order to correct and enhance the data for further
+use. These include:
+    assesing columns and rows
+    creating callable objects
+    finding correct button panel template
+    TODO: correct number sequence
+
+  Typical usage example:
+
+  det = Detection(detection_data,button_width,button_height)
+  TODO: correctseq()
+"""
 from math import floor as rounddown
-#Input: Raw detections of buttons, button width and height
-#Output: Proposed corrected numpy array of elevator panel
-#Description: 
-#Requisities: all labeled buttons were detected, buttons are ordered from bottom to top, buttons are labeled by integer numbers
-#Notes:
-#############
+
+import numpy as np
+
+#TESTDATA
 dtype = [('x', float),( 'y', float),( 'n', int)]
 data = np.array([(0.625,0.11,1),
                 (0.12,0.35,2),(0.39,0.36,3),(0.61,0.38,4),(0.89,0.32,5),
@@ -268,4 +283,4 @@ class Template:
 #Istance of Detection class
 det = Detection(data_OCR,but_w,but_h)
 #print(temp.n_ranks,temp.priority_lr,temp.priority_vh, temp.rows, temp.cols,temp.panel.buttons[5].n_raw)
-print(det.template.n_ranks,det.panel.buttons[1].col)
+print()
