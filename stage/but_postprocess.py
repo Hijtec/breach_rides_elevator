@@ -36,84 +36,116 @@ data_OCR = np.array([(0.625,0.11,1),
                 (0.11,0.72,1),(0.35,0.71,11),(0.58,0.74,12),(0.82,0.71,13),
                 (0.10,0.93,14),(0.37,0.88,15)],
                 dtype=dtype)
-but_w = 0.25
-but_h = 0.2
+but_w = 0.2
+but_h = 0.18
 
 class Detection:
+    """A wrapper class for data input.
+
+    Attributes:
+        detected: An array of given data from recognition
+        buttons: A list of Button classes based on given data
+        panel: A Panel object 
+        but: A list of detected button parameters
+        adj_cooef: TODO: a cooeficient for moving the comparison value for imperfect/real positions
+
+    Methods:
+        vypsat metody, kdyby to bylo dlouhé 
+        create_buttons: creates a list of Button objects
+        likes_spam(arg = 1.0): A method with arguments with mandatory datatype.
+        eggs(): A method without arguments
+
+    """
+
     def __init__(self,detected,but_w,but_h):
+        # Initializes the class and calls its methods.
+
         self.detected = detected
         self.buttons = None
         self.panel = None
         self.but = (but_w,but_h)
-        self.max_rows = rounddown(1/but_h)
-        self.max_cols = rounddown(1/but_w)
-        self.adj_cooef = 1 #coefficient for moving the comparison value for imperfect positions
-        self.create_buttons() #creates button classes and gives them raw data
+        self.adj_cooef = 1
+
+        self.create_buttons() 
         self.create_panel()
         self.create_template()
 
     def create_buttons(self):
+        """Creates a list of button objects."""
         button_list = []
         for i in self.detected:
-            x_raw = i[0]
-            y_raw = i[1]
-            n_raw = i[2]
+            x_raw, y_raw, n_raw = i[0], i[1], i[2]
             button_list.append(Button(x_raw,y_raw,n_raw))
         self.buttons = button_list
     
     def create_panel(self):
+        """Creates a panel object with all of its necessities."""
         rows, rows_all, r_val_hist = self.find_classes("row")
         cols, cols_all, c_val_hist = self.find_classes("col")
+
+        if len(rows) > 1/but_h: raise ValueError("There can't be more rows than can physically fit into statespace")
+        if len(cols) > 1/but_w: raise ValueError("There can't be more cols than can physically fit into statespace")
+
         rows_ordered = self.order_unique_coord(rows_all, r_val_hist, "rows")
         cols_ordered = self.order_unique_coord(cols_all, c_val_hist, "cols")
+
         self.panel = Panel(self.buttons, rows_ordered, cols_ordered)
 
     def create_template(self):
         self.template = Template(self.panel)
 
     def find_classes(self,axis):
-        if axis == "row":
+        if axis == "row": 
             axis = 1
-        elif axis == "col":
+        elif axis == "col": 
             axis = 0
-        else:
+        else: 
             raise NameError("argument must be row or col")
 
         i = -1
         sames = []
         comp_val_history = []
-        for c in self.detected:
-            i +=1
-            compare_val = self.detected[i][axis]
+
+        for _ in self.detected:
             same_class = []
             j = -1
+
+            i +=1
+            compare_val = self.detected[i][axis]
+
             for d in self.detected:
                 j +=1
                 val = d[axis]
                 if abs(val-compare_val) < self.but[axis]/2:
                     same_class.append(j)
                     compare_val = compare_val + (val-compare_val)/self.adj_cooef
+
             sames.append(same_class)
             comp_val_history.append(rounddown(compare_val*10)) #Important to sorting the columns based on y_axis
+
         sames = np.array(sames)
         sames_unique = np.unique(sames)
+
         return sames_unique, sames, comp_val_history
 
     def order_unique_coord(self,coord,comp_hist,type):
-        rearranged = []
-        out = []
+        rearranged, out = [], []
         indexing = np.argsort(comp_hist)
+
         for j in indexing:
             rearranged.append(coord[j])
         _, idx = np.unique(rearranged, return_index=True)
+
         for j in np.sort(idx):
             out.append(rearranged[j])
+
         if type == "cols":
             self.cols = out
         elif type == "rows":
             self.rows = out
         else:
             raise NameError("type must be a (rows) or (cols)")
+        
         return out
 
 class Button:
@@ -163,21 +195,22 @@ class Template:
 
     def assign_template(self):
         minElement = np.argmax(np.array(self.n_ranks)) #gets the index of the best candidate
+
         if minElement == 0 or minElement == 2:
             self.priority_lr = True
         elif minElement == 1 or minElement == 3:
             self.priority_lr = False
         else:
-            raise TypeError("Unexpected input into finding template")
+            raise ValueError("Unexpected input into finding template")
 
         if minElement == 0 or minElement == 1:
             self.priority_vh = True
         elif minElement == 2 or minElement == 3:
             self.priority_vh = False
         else:
-            raise TypeError("Unexpected input into finding template")
+            raise ValueError("Unexpected input into finding template")
 
-        print('The values are ordered from left to right: {} \nThe values are counted by rows: {}'.format(self.priority_lr,self.priority_vh))
+        print(f'The values are ordered from left to right: {self.priority_lr} \nThe values are counted by rows: {self.priority_vh}')
 
     def count_lr(self, order):
         if order == "left":
@@ -186,32 +219,31 @@ class Template:
             axis = -1
         else:
             raise NameError("order must be either left or right")
+
         #Making an iterable list to count with
         listed_numbers = []
         for row in self.rows:
             for i in row:
                 listed_numbers.append(self.panel.buttons[i].n_raw) #get the proposed button number
+        
         #Defining starting positions
         if axis == 1:
-            curr = 0
-            foll = curr
+            curr, foll = 0, 0
         if axis == -1:
-            curr = -1
-            foll = curr
+            curr, foll = -1, -1
         n_order = 0
         #Iterate through the list
-        for number in listed_numbers:
-            try:
-                foll += axis
-                if listed_numbers[curr] < listed_numbers[foll]:
-                    n_order += 1
-                else:
-                    n_order += 0
-                curr = foll
-            except:
-                pass
-        #Return order of the sequence
-        return n_order
+        for _ in range(len(listed_numbers)-1):
+            foll += axis
+
+            if listed_numbers[curr] < listed_numbers[foll]:
+                n_order += 1
+            else:
+                n_order += 0
+            
+            curr = foll
+
+        return n_order #Return order of the sequence
     
     def count_vh(self, order):
         if order == "left":
@@ -225,52 +257,54 @@ class Template:
         cols_suppressed = self.recalculate_cols(rows_suppressed)
         #Making an iterable list to count with
         listed_numbers = []
+
         for col in cols_suppressed:
             for i in col:
                 listed_numbers.append(self.panel.buttons[i].n_raw) #get the proposed button number
+
         #Defining starting positions
         if axis == 1:
-            curr = 0
-            foll = curr
+            curr, foll = 0, 0
         if axis == -1:
-            curr = -1
-            foll = curr
+            curr, foll = -1,-1
         n_order = 0
         #Iterate through the list
-        for number in listed_numbers:
-            try:
-                foll += axis
-                if listed_numbers[curr] < listed_numbers[foll]:
-                    n_order += 1
-                else:
-                    n_order += 0
-                curr = foll
-            except:
-                pass
-        #Return order of the sequence
-        return n_order
+        for _ in range(len(listed_numbers)-1):
+            foll += axis
+            if listed_numbers[curr] < listed_numbers[foll]:
+                n_order += 1
+            else:
+                n_order += 0
+            curr = foll
+        
+        return n_order #Return order of the sequence
     
     def suppress_odd_rows(self):
         avg_in_row = 0
+
         for row in self.rows:
             avg_in_row += len(row)
+
         avg_in_row = avg_in_row/len(self.rows)
+
         if avg_in_row > len(self.rows[0]): #compare if the first row has less members
             del_index = self.rows[0][:]
             suppressed = np.delete(self.rows, del_index)
             print("First row suppressed for rank count")
         else:
             suppressed = self.rows
+
         return suppressed
 
     def recalculate_cols(self,suppressed):
         cols_ordered_suppressed = []
-        ncols = 0
-        col = []
+        ncols, col = 0, []
+
         for i in suppressed:
-            if len(i) > ncols:
+            if len(i) > ncols: 
                 ncols = len(i)
-        for i in range(0,ncols):
+        
+        for i in range(ncols):
             try:
                 col = []
                 for item in suppressed:
@@ -278,9 +312,9 @@ class Template:
                 cols_ordered_suppressed.append(col)
             except:
                 cols_ordered_suppressed.append(col)
+    
         return cols_ordered_suppressed
 
 #Istance of Detection class
 det = Detection(data_OCR,but_w,but_h)
-#print(temp.n_ranks,temp.priority_lr,temp.priority_vh, temp.rows, temp.cols,temp.panel.buttons[5].n_raw)
-print()
+print(det.template.n_ranks,det.template.priority_lr,det.template.priority_vh, det.template.rows, det.template.cols, det.panel.buttons[5].n_raw)
