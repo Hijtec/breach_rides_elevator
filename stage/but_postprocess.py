@@ -35,7 +35,7 @@ class Detection:
         self.adj_cooef = 1 #coefficient for moving the comparison value for imperfect positions
         self.create_buttons() #creates button classes and gives them raw data
         self.create_panel()
-        self.create_panel()
+        self.create_template()
 
     def create_buttons(self):
         button_list = []
@@ -136,15 +136,15 @@ class Template:
         self.rows = panel.rows
         self.cols = panel.cols
         self.panel = panel
-        self.find_template()
+        self.find_template_candidate()
+        self.assign_template()
     
-    def find_template(self):
+    def find_template_candidate(self):
         self.rank_h_lr = self.count_lr("left")
         self.rank_h_rl = self.count_lr("right")
         self.rank_v_lr = self.count_vh("left")
         self.rank_v_rl = self.count_vh("right")
         self.n_ranks = [self.rank_h_lr, self.rank_h_rl, self.rank_v_lr, self.rank_v_rl]
-        self.assign_template()
 
     def assign_template(self):
         minElement = np.argmax(np.array(self.n_ranks)) #gets the index of the best candidate
@@ -267,12 +267,5 @@ class Template:
 
 #Istance of Detection class
 det = Detection(data_OCR,but_w,but_h)
-#Its functions
-rows, rows_all,r_val_hist = det.find_classes("row")
-cols, cols_all,c_val_hist = det.find_classes("col")
-cols_ordered = det.order_unique_coord(cols_all,c_val_hist,"cols")
-rows_ordered = det.order_unique_coord(rows_all,r_val_hist,"rows")
-
-panel = Panel(det.buttons,rows_ordered,cols_ordered)  #Create an instance of panel (gives Buttons rows and columns)
-temp = Template(panel)
-print(temp.n_ranks,temp.priority_lr,temp.priority_vh, temp.rows, temp.cols,temp.panel.buttons[5].n_raw)
+#print(temp.n_ranks,temp.priority_lr,temp.priority_vh, temp.rows, temp.cols,temp.panel.buttons[5].n_raw)
+print(det.template.n_ranks,det.panel.buttons[1].col)
