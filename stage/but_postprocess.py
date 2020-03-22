@@ -31,7 +31,7 @@ class Detection:
         self.but = (but_w,but_h)
         self.max_rows = rounddown(1/but_h)
         self.max_cols = rounddown(1/but_w)
-        self.adj_cooef = 1
+        self.adj_cooef = 1 #coefficient for moving the comparison value for imperfect positions
     def create_button(self,detected):
         for i in detected:
             x_raw = i[0]
@@ -73,7 +73,7 @@ class Detection:
                     same_class.append(j)
                     compare_val = compare_val + (val-compare_val)/self.adj_cooef
             sames.append(same_class)
-            comp_val_history.append(rounddown(compare_val*10))
+            comp_val_history.append(rounddown(compare_val*10)) #Important to sorting the columns based on y_axis
         sames = np.array(sames)
         sames_unique = np.unique(sames)
         return sames_unique, sames, comp_val_history
@@ -137,26 +137,27 @@ class Template:
         self.rank_v = self.count_vh(self.panel,"vertical")
         self.rank_h = self.count_vh(self.panel,"horizontal")
     
-    def count_lr(self,order):
+    def count_lr(self, order):
         if order == "left":
             axis = 1
         elif order == "right":
             axis = -1
         else:
             raise NameError("order must be either left or right")
+        #Making an iterable list to count with
         listed = []
         for row in self.rows:
             for i in row:
                 listed.append(i)
-        n_order = 0
+        #Defining starting positions
         if axis == 1:
             curr = 0
             foll = curr
         if axis == -1:
             curr = -1
             foll = curr
-        listed = listed
-        print(listed)
+        n_order = 0
+        #Iterate through the list
         for number in listed:
             try:
                 foll += axis
@@ -164,12 +165,30 @@ class Template:
                     n_order += 1
                 else:
                     n_order += 0
-                print(curr,foll)
                 curr = foll
             except:
                 pass
+        #Return order of the sequence
         return n_order
-        
+    
+    def count_vh(self, order):
+        pass
+    
+    def suppress_odd_rows(self,order):
+        if order == "left":
+            axis = 0
+        elif order == "right":
+            axis = -1
+        else:
+            raise NameError("order must be either left or right")
+        avg_in_row = 0
+        for row in self.rows:
+            avg_in_row += len(row)
+        avg_in_row = avg_in_row/len(self.rows)
+
+
+
+
 
 
 #Istance of Detection class
@@ -189,4 +208,8 @@ for row in panel.rows:
                 listed.append(i)
 
 temp = Template(panel)
-print(temp.count_lr("right"))
+avg_in_row = 0
+for row in temp.rows:
+    avg_in_row += len(row)
+avg_in_row = avg_in_row/len(temp.rows)
+print(len(panel.rows))
