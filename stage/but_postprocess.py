@@ -50,13 +50,12 @@ class Detection:
         adj_cooef: TODO: a cooeficient for moving the comparison value for imperfect/real positions
 
     Methods:
-        vypsat metody, kdyby to bylo dlouhé 
-        create_buttons: creates a list of Button objects
-        create_panel: creates a slave Panel object
-        create_template: creates a slave Template object
-        find_classes(axis = 1/0): finds buttons along the same row/column
-        order_unique_coord(coord, history, type = "rows"/"cols"): rearanges rows 
-                            and columns based on their average position in space
+        create_buttons:             creates a list of Button objects
+        create_panel:               creates a slave Panel object
+        create_template:            creates a slave Template object
+        find_classes(axis = 1/0):   finds buttons along the same row/column
+        order_unique_coord(coord, history, type = "rows"/"cols"): 
+                                    rearanges rows and columns based on their average position in space
 
     """
 
@@ -95,9 +94,11 @@ class Detection:
         self.panel = Panel(self.buttons, rows_ordered, cols_ordered)
 
     def create_template(self):
+        """Creates a template object."""
         self.template = Template(self.panel)
 
     def find_classes(self,axis):
+        """Finds rows/columns in data."""
         if axis == "row": 
             axis = 1
         elif axis == "col": 
@@ -132,6 +133,7 @@ class Detection:
         return sames_unique, sames, comp_val_history
 
     def order_unique_coord(self,coord,comp_hist,type):
+        """Rearanges rows/cols based on their position and eliminates duplicities."""
         rearranged, out = [], []
         indexing = np.argsort(comp_hist)
 
