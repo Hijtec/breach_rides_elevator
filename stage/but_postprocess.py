@@ -411,6 +411,7 @@ class Template:
                 ncols = len(i)
         
         for i in range(ncols):
+            #TODO:get rid of try
             try:
                 col = []
                 for item in suppressed:
