@@ -52,8 +52,11 @@ class Detection:
     Methods:
         vypsat metody, kdyby to bylo dlouhé 
         create_buttons: creates a list of Button objects
-        likes_spam(arg = 1.0): A method with arguments with mandatory datatype.
-        eggs(): A method without arguments
+        create_panel: creates a slave Panel object
+        create_template: creates a slave Template object
+        find_classes(axis = 1/0): finds buttons along the same row/column
+        order_unique_coord(coord, history, type = "rows"/"cols"): rearanges rows 
+                            and columns based on their average position in space
 
     """
 
