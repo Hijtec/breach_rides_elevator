@@ -43,25 +43,24 @@ class Detection:
     """A wrapper class for data input.
 
     Attributes:
-        detected: An array of given data from recognition
-        buttons: A list of Button classes based on given data
-        panel: A Panel object 
-        but: A list of detected button parameters
-        adj_cooef: TODO: a cooeficient for moving the comparison value for imperfect/real positions
+        detected:                   An array of given data from recognition
+        buttons:                    List of Button classes based on given data
+        panel:                      Panel object
+        template:                   Template object
+        but:                        List of detected button parameters
+        adj_cooef: TODO: A cooeficient for moving the comparison value for imperfect/real positions
 
     Methods:
-        create_buttons:             creates a list of Button objects
-        create_panel:               creates a slave Panel object
-        create_template:            creates a slave Template object
-        find_classes(axis = 1/0):   finds buttons along the same row/column
+        create_buttons:             Creates a list of Button objects
+        create_panel:               Creates a slave Panel object
+        create_template:            Creates a slave Template object
+        find_classes(axis = 1/0):   Finds buttons along the same row/column
         order_unique_coord(coord, history, type = "rows"/"cols"): 
-                                    rearanges rows and columns based on their average position in space
-
+                                    Rearanges rows and columns based on their average position in space
     """
 
     def __init__(self,detected,but_w,but_h):
-        # Initializes the class and calls its methods.
-
+        """Initializes the class and calls its methods."""
         self.detected = detected
         self.buttons = None
         self.panel = None
@@ -88,8 +87,8 @@ class Detection:
         if len(rows) > 1/but_h: raise ValueError("There can't be more rows than can physically fit into statespace")
         if len(cols) > 1/but_w: raise ValueError("There can't be more cols than can physically fit into statespace")
 
-        rows_ordered = self.order_unique_coord(rows_all, r_val_hist, "rows")
-        cols_ordered = self.order_unique_coord(cols_all, c_val_hist, "cols")
+        rows_ordered = self.order_unique_coord(rows_all, r_val_hist, "row")
+        cols_ordered = self.order_unique_coord(cols_all, c_val_hist, "col")
 
         self.panel = Panel(self.buttons, rows_ordered, cols_ordered)
 
@@ -98,7 +97,17 @@ class Detection:
         self.template = Template(self.panel)
 
     def find_classes(self,axis):
-        """Finds rows/columns in data."""
+        """Finds rows/columns in data.
+
+        Args:
+            axis:                   String ("row"/"col") that depends upon if we want to find rows or cols
+
+        Returns:
+            sames_unique:           Numpy sorted array of unique classes
+            sames:                  Numpy array of found classes
+            comp_val_history:       List of average values of y_raw (for rows)/ x_raw(for cols) 
+                                    for each member, used to differenciate classes
+        """
         if axis == "row": 
             axis = 1
         elif axis == "col": 
@@ -133,7 +142,20 @@ class Detection:
         return sames_unique, sames, comp_val_history
 
     def order_unique_coord(self,coord,comp_hist,type):
-        """Rearanges rows/cols based on their position and eliminates duplicities."""
+        """Rearanges rows/cols based on their position and eliminates duplicities.
+
+        Args:
+            coord:      List of lists of all detected rows/columns
+            comp_hist:  List of average values of y_raw (for rows)/ x_raw(for cols)
+                        for each member, used to differenciate classes
+            type:       str("row"/"col") based on finding order of rows/columns
+
+        Returns:
+            out:        Returns the ordered list of rows/cols
+    
+        Raises:
+            TypeError:  When arg type is not either "col" or "row"
+        """
         rearranged, out = [], []
         indexing = np.argsort(comp_hist)
 
@@ -144,26 +166,44 @@ class Detection:
         for j in np.sort(idx):
             out.append(rearranged[j])
 
-        if type == "cols":
+        if type == "col":
             self.cols = out
-        elif type == "rows":
+        elif type == "row":
             self.rows = out
         else:
-            raise NameError("type must be a (rows) or (cols)")
+            raise TypeError("Type must be a (row) or (col)")
         
         return out
 
 class Button:
+    """A storage class for button instance.
+
+    Attributes:
+        x_raw:                  X coordinate from button recognition data
+        y_raw:                  Y coordinate from button recognition data
+        n_raw:                  Proposed number from button recognition data
+        n_miss:                 An attribute indicating whether the button is suspected to be mislabeled
+        col:                    Column coordinate/position
+        row:                    Row coordinate/position
+    """
     def __init__(self,x_raw,y_raw,n_raw):
+        """Initializes the class with position parameters."""
         self.x_raw = x_raw
         self.y_raw = y_raw
         self.n_raw = n_raw
-        self.n_mis = 0
+        self.n_miss = 0
         self.n_corr = None
         self.col = None
         self.row = None
     
 class Panel:
+    """A class for assigning buttons coords to a detection instance.
+
+    Attributes:
+        buttons:               List of Button instances
+        rows:                  List of ordered unique rows
+        cols:                  List of ordered unique columns
+    """
     def __init__(self,buttons,rows,cols):
         self.buttons = buttons
         self.rows = rows
@@ -181,6 +221,24 @@ class Panel:
                 self.buttons[item].col = j
 
 class Template:
+    """A class for assigning a template to detection instance.
+
+    Attributes:
+        n_ranks:                    List of ranked template candidates
+        priority_lr:                Boolean of left-right sequence priority
+        priority_vh:                Boolean of horizontal-vertical sequence priority
+        rows:                       List of ordered unique cols inherited from panel instance
+        cols:                       List of ordered unique rows inherited from panel instance
+        panel:                      Panel inherited instance
+    
+    Methods:
+        find_template_candidate:    Finds ranks of all possible templates and saves them in a list
+        assign_template:            Sets priority_XX based on best template candidate, prints info
+        count_lr:                   Creates an iterable list through which it computes left-right ranks
+        count_vh:                   Creates an iterable list through which it computes horizontal-vertical ranks
+        suppress_odd_rows:          Based on average members in row suppresses first row, prints info if it did
+        recalculate_cols:           Recalculates the columns based upon the suppressed rows
+    """
     def __init__(self,panel):
         self.n_ranks = None
         self.priority_lr = None #True if left->right, false if right->left
