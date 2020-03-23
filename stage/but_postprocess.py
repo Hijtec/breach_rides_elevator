@@ -411,7 +411,8 @@ class Template:
                 ncols = len(i)
         
         for i in range(ncols):
-            #TODO:get rid of try
+            #TODO:get rid of try i 0,1,2,3
+            """
             try:
                 col = []
                 for item in suppressed:
@@ -419,6 +420,14 @@ class Template:
                 cols_ordered_suppressed.append(col)
             except:
                 cols_ordered_suppressed.append(col)
+            """
+            col = []
+            for item in suppressed:
+                print(len(item), i)
+                if len(item)-1 >= i:
+                    col.append(item[i])
+            cols_ordered_suppressed.append(col)
+            print(cols_ordered_suppressed)
     
         return cols_ordered_suppressed
 
