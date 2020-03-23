@@ -250,13 +250,20 @@ class Template:
         self.assign_template()
     
     def find_template_candidate(self):
+        """Ranks the numbering template based upon its correct probability."""
         self.rank_h_lr = self.count_lr("left")
         self.rank_h_rl = self.count_lr("right")
         self.rank_v_lr = self.count_vh("left")
         self.rank_v_rl = self.count_vh("right")
+        
         self.n_ranks = [self.rank_h_lr, self.rank_h_rl, self.rank_v_lr, self.rank_v_rl]
 
     def assign_template(self):
+        """Assigns priority_XX to Template object.
+
+        Raises:
+            ValueError:  Unexpected input
+        """
         minElement = np.argmax(np.array(self.n_ranks)) #gets the index of the best candidate
 
         if minElement == 0 or minElement == 2:
@@ -276,12 +283,23 @@ class Template:
         print(f'The values are ordered from left to right: {self.priority_lr} \nThe values are counted by rows: {self.priority_vh}')
 
     def count_lr(self, order):
+        """Creates an iterable list through rows and computes left-right ranks.
+
+        Args:
+            order:          str("left"/"right"), test counting from left/right
+
+        Returns:
+            n_order:        Rank of the tested sequence
+    
+        Raises:
+            ValueError:     arg(order): Order must be either left or right
+        """
         if order == "left":
             axis = 1
         elif order == "right":
             axis = -1
         else:
-            raise NameError("order must be either left or right")
+            raise ValueError("Order must be either left or right")
 
         #Making an iterable list to count with
         listed_numbers = []
@@ -309,12 +327,23 @@ class Template:
         return n_order #Return order of the sequence
     
     def count_vh(self, order):
+        """Creates an iterable list through columns and computes horizontal-vertical ranks.
+
+        Args:
+            order:          str("left"/"right"), test counting from left/right
+
+        Returns:
+            n_order:        Rank of the tested sequence
+    
+        Raises:
+            ValueError:     arg(order): Order must be either left or right
+        """
         if order == "left":
             axis = 1
         elif order == "right":
             axis = -1
         else:
-            raise NameError("order must be either left or right")
+            raise ValueError("Order must be either left or right")
         #Suppression and recalculation of odd data
         rows_suppressed = self.suppress_odd_rows()
         cols_suppressed = self.recalculate_cols(rows_suppressed)
@@ -343,6 +372,12 @@ class Template:
         return n_order #Return order of the sequence
     
     def suppress_odd_rows(self):
+        """Suppresses first row of panel for counting rank if the row is smaller than avg of all others.
+
+        Returns:
+            suppressed:     List of rows without the potentionally suppressed one
+    
+        """
         avg_in_row = 0
 
         for row in self.rows:
@@ -352,14 +387,22 @@ class Template:
 
         if avg_in_row > len(self.rows[0]): #compare if the first row has less members
             del_index = self.rows[0][:]
-            suppressed = np.delete(self.rows, del_index)
+            suppressed_rows = np.delete(self.rows, del_index)
             print("First row suppressed for rank count")
         else:
-            suppressed = self.rows
+            suppressed_rows = self.rows
 
-        return suppressed
+        return suppressed_rows
 
     def recalculate_cols(self,suppressed):
+        """Recalculates columns after the potential suppression of first row.
+
+        Args:
+            suppressed:                     List of unique rows
+
+        Returns:
+            cols_ordered_suppressed:        List of ordered unique columns
+        """
         cols_ordered_suppressed = []
         ncols, col = 0, []
 
