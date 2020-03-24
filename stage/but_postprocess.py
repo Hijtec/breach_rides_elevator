@@ -513,12 +513,12 @@ class Panel:
     def assign_buttons(self):
         """A method for assigning buttons coords to a detection instance."""
         i = 0
-        for row in rows:
+        for row in self.rows:
             i +=1
             for item in row:
                 self.buttons[item].row = i
         j = 0
-        for col in cols:
+        for col in self.cols:
             j +=1
             for item in col:
                 self.buttons[item].col = j
