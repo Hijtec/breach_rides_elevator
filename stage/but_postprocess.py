@@ -15,7 +15,7 @@ use. These include:
 
   Typical usage example:
 
-  det = Detection(detection_data,button_width,button_height)
+  det = Detection(detection_data,softmax_prediction,button_width,button_height)
   TODO: correctseq()
 """
 from math import floor as rounddown
@@ -48,7 +48,8 @@ class Detection:
         template:                   Template object, corrects button sequence
         panel:                      Panel object
         but:                        List of detected button parameters
-        adj_cooef: TODO: A cooeficient for moving the comparison value for imperfect/real positions
+        adj_cooef: TODO:            A cooeficient for moving the comparison value for imperfect/real positions
+        softmax_pred:               A list of lists of x',x'',x''' prediction of label of buttons from given data
 
     Methods:
         create_buttons_raw:         Creates a list of Button objects from raw data
@@ -59,7 +60,7 @@ class Detection:
                                     Rearanges rows and columns based on their average position in space
     """
 
-    def __init__(self,detected,but_w,but_h):
+    def __init__(self,detected,softmax_pred,but_w,but_h):
         """Initializes the class and calls its methods."""
         self.detected = detected
         self.buttons_raw = None
@@ -67,6 +68,7 @@ class Detection:
         self.panel = None
         self.but = (but_w,but_h)
         self.adj_cooef = 1
+        self.softmax_pred = softmax_pred
 
         self.create_buttons_raw()
         self.create_template()
@@ -91,7 +93,7 @@ class Detection:
         self.rows_ordered = self.order_unique_coord(rows_all, r_val_hist, "row")
         self.cols_ordered = self.order_unique_coord(cols_all, c_val_hist, "col")
 
-        self.template = Template(self.buttons_raw, self.rows_ordered, self.cols_ordered)
+        self.template = Template(self.buttons_raw, self.softmax_pred, self.rows_ordered, self.cols_ordered)
     
     def create_panel(self):
         """Creates a panel object with all of its necessities."""
@@ -187,7 +189,8 @@ class Template:
         rows:                       List of ordered unique cols inherited from panel instance
         cols:                       List of ordered unique rows inherited from panel instance
         seq:                        Sequence of raw button numbers
-        jump_button:
+        jump_button:                Boolean of jumpButton presence
+        softmax_pred:               A list of lists of x',x'',x''' prediction of label of buttons from given data
     
     Methods:
         find_template_candidate:    Finds ranks of all possible templates and saves them in a list
@@ -199,16 +202,19 @@ class Template:
         flatten_sqq:                Flattens number sequence (suppreses odd rows for priority_vh = False)
         find_seq_error              Finds errors in numbering buttons
         TODO: fix sequence:         Fixes the number sequence
-        TODO: order buttons:        Creates an ordered list of button objects for further use
+        order buttons:        Creates an ordered list of button objects for further use
     """
-    def __init__(self, buttons_raw, rows_ordered, cols_ordered):
+    def __init__(self, buttons_raw, softmax_pred, rows_ordered, cols_ordered):
         self.n_ranks = None
         self.priority_lr = None #True if left->right, false if right->left
         self.priority_vh = None #True if counting by rows, false if counting by columns
+        self.seq = None
+        self.jump_button = False
         self.rows = rows_ordered
         self.cols = cols_ordered
-        self.seq = None
         self.buttons_raw = buttons_raw
+        self.softmax_pred = softmax_pred
+        
 
         self.find_template_candidate()
         self.assign_template()
@@ -489,19 +495,32 @@ class Template:
 
                 if (abs(seq[seq_index-1]-seq[valid_number_index])) == (abs(valid_number_index-(seq_index-1))):
                     for i in range(seq_index, valid_number_index):
-                        seq[i] = seq[seq_index-1]+((seq_index-i)+1)
+                        seq[i] = seq[seq_index-1]+(seq_index-i)+1
                         seq_numbers_corrected.append(seq[i])
                         seq_index_corrected.append(i)
                         seq_correct[seq_index] = True
                         print(f'Replaced index({i}) with number({seq[i]})')
                 
                 elif (abs(seq[seq_index-1]-seq[valid_number_index])) != (abs(valid_number_index-(seq_index-1))):
-                    print("jump button detected")
-                    #TODO:finish this part
+                    print("Jump button detected.")
+                    self.jump_button = True
+                    pred = self.softmax_pred
+                    for proposal in range(3):
+                        if pred[seq_index][proposal] == seq[valid_number_index]+(seq_index - valid_number_index) or pred[seq_index][proposal] == seq[seq_index]-((seq_index-1)-seq_index):
+                            proposal_rank = 1
+                        else:
+                            proposal_rank = 0
+                        if proposal_rank == 1:
+                            seq[i] = pred[seq_index][proposal]
+                            print(f'Replaced index({i}) with number({seq[i]})')
+                            break
+
+                    #TODO:not tested
         self.seq = seq
         print(f'Button labels  {self.seq_old} \nfixed to array {np.array(self.seq)}')
 
     def order_buttons(self):
+        """Grants buttons their columns and rows ad proper number"""
         button_list = []
         j = 0
         for i in self.buttons_raw:
@@ -582,6 +601,8 @@ class Panel:
                 self.buttons[item].col = j
 
 #Istance of Detection class
-det = Detection(data_OCR,but_w,but_h)
+empty_predictions = np.empty((15,3))
+print(empty_predictions)
+det = Detection(data_OCR,empty_predictions,but_w,but_h)
 #print(det.template.n_ranks,det.template.priority_lr,det.template.priority_vh, det.template.rows, det.template.cols, det.buttons_raw[5].n_raw)
 #print(det.template.seq, det.template.seq_correct)
