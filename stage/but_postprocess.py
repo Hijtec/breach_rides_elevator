@@ -198,7 +198,6 @@ class Template:
         recalculate_cols:           Recalculates the columns based upon the suppressed rows
         flatten_sqq:                Flattens number sequence (suppreses odd rows for priority_vh = False)
         find_seq_error              Finds errors in numbering buttons
-
         TODO: fix sequence:         Fixes the number sequence
         TODO: order buttons:        Creates an ordered list of button objects for further use
     """
@@ -215,6 +214,8 @@ class Template:
         self.assign_template()
         self.flatten_seq()
         self.find_seq_error()
+        self.fix_seq(self.seq)
+        self.order_buttons()
     
     def find_template_candidate(self):
         """Ranks the numbering template based upon its correct probability."""
@@ -450,7 +451,6 @@ class Template:
             seq_correct.append(False)
     
         for i in range(len(seq)-2):
-            print(i)
             if seq[i+1] == seq[i]+1 or seq[i+1] == seq[i+2]-1:
                 seq_correct.append(True)
             else:
@@ -464,8 +464,65 @@ class Template:
         self.seq_correct = seq_correct
         return seq, seq_correct
 
+    def fix_seq(self,seq):
+        """Fixes a sequence of buttons"""
+        #TODO: fix if rows_suppressed?
+        self.seq_old = np.array(seq)
+        self.seq_correct_old = np.array(self.seq_correct)
+        seq_correct = self.seq_correct
+        seq_numbers_corrected, seq_index_corrected = [], []
+        for i in range(len(seq)-2): #omit first and last button
+            seq_index = i
+            if seq_correct[seq_index] != True:
+                found_valid_number = False
+                valid_number_index = seq_index + 1
 
+                while found_valid_number == False:
+                    if valid_number_index >= len(seq_correct):
+                        print("loop broken")
+                        valid_number_index = valid_number_index-1
+                        break
+                    if seq_correct[valid_number_index] == True:
+                        found_valid_number = True
+                    elif seq_correct[valid_number_index] == False:
+                        valid_number_index +=1
 
+                if (abs(seq[seq_index-1]-seq[valid_number_index])) == (abs(valid_number_index-(seq_index-1))):
+                    for i in range(seq_index, valid_number_index):
+                        seq[i] = seq[seq_index-1]+((seq_index-i)+1)
+                        seq_numbers_corrected.append(seq[i])
+                        seq_index_corrected.append(i)
+                        seq_correct[seq_index] = True
+                        print(f'Replaced index({i}) with number({seq[i]})')
+                
+                elif (abs(seq[seq_index-1]-seq[valid_number_index])) != (abs(valid_number_index-(seq_index-1))):
+                    print("jump button detected")
+                    #TODO:finish this part
+        self.seq = seq
+        print(f'Button labels  {self.seq_old} \nfixed to array {np.array(self.seq)}')
+
+    def order_buttons(self):
+        button_list = []
+        j = 0
+        for i in self.buttons_raw:
+            i.n_valid = self.seq_correct_old[j]
+            i.n_correct = self.seq[j]
+            j +=1
+        
+        row_index = 0
+        for row in self.rows:
+            row_index +=1
+            for item in row:
+                self.buttons_raw[item].row = row_index
+        
+        col_index = 0
+        for col in self.cols:
+            col_index +=1
+            for item in col:
+                self.buttons_raw[item].col = col_index
+        
+        for but in self.buttons_raw:
+            print(but.__dict__)
 
 class Button:
     """A storage class for button instance.
@@ -483,8 +540,9 @@ class Button:
         self.x_raw = x_raw
         self.y_raw = y_raw
         self.n_raw = n_raw
-        self.n_miss = 0
-        self.n_corr = None
+        self.n_correct = None
+        self.n_valid = None
+        
         self.col = None
         self.row = None
  
@@ -526,4 +584,4 @@ class Panel:
 #Istance of Detection class
 det = Detection(data_OCR,but_w,but_h)
 #print(det.template.n_ranks,det.template.priority_lr,det.template.priority_vh, det.template.rows, det.template.cols, det.buttons_raw[5].n_raw)
-print(det.cols_ordered, det.template.seq_correct)
+#print(det.template.seq, det.template.seq_correct)
