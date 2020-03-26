@@ -98,7 +98,7 @@ class Detection:
     def create_panel(self):
         """Creates a panel object with all of its necessities."""
 
-        #self.panel = Panel(self.template.buttons_ordered, rows_ordered, cols_ordered)
+        self.panel = Panel(self.template.buttons, self.template.rows, self.template.cols, self.template.priority_lr, self.template.priority_vh)
 
     def find_classes(self,axis):
         """Finds rows/columns in data.
@@ -540,7 +540,8 @@ class Template:
             for item in col:
                 self.buttons_raw[item].col = col_index
         
-        for but in self.buttons_raw:
+        self.buttons = self.buttons_raw
+        for but in self.buttons:
             print(but.__dict__)
 
 class Button:
