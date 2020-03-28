@@ -11,7 +11,7 @@ use. These include:
     assigning columns and rows
     creating callable objects
     finding correct button panel template
-    correct number sequence
+    fix number sequence
 
   Typical usage example:
 
@@ -60,7 +60,7 @@ class Detection:
                                     Rearanges rows and columns based on their average position in space
     """
 
-    def __init__(self,detected,softmax_pred,but_w,but_h):
+    def __init__(self, detected, softmax_pred, but_w, but_h):
         """Initializes the class and calls its methods."""
         self.detected = detected
         self.buttons_raw = None
