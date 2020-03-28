@@ -1,4 +1,4 @@
-"""TODO:A postprocessing module for button recognition.
+"""A postprocessing module for button recognition.
 
 #Input:         Raw detections of buttons(array), button width and height(floats)
 #Output:        Proposed corrected array of elevator panel(numpy.array)
@@ -8,15 +8,15 @@
 This script utilises data given from a recognition module and feeds it
 for postprocessing in order to correct and enhance the data for further
 use. These include:
-    assesing columns and rows
+    assigning columns and rows
     creating callable objects
     finding correct button panel template
-    TODO: correct number sequence
+    correct number sequence
 
   Typical usage example:
 
   det = Detection(detection_data,softmax_prediction,button_width,button_height)
-  TODO: correctseq()
+  TODO:
 """
 from math import floor as rounddown
 
