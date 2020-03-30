@@ -113,22 +113,26 @@ class Preprocess:
 
     def canny_edge_extraction(self, sigma = 0.33):
         self.edges = imutils.auto_canny(self.image, sigma)
-        self.edges = cv2.dilate(self.edges, None, iterations=1)
+        self.edges = cv2.dilate(self.edges, None, iterations=2)
         self.edges = cv2.erode(self.edges, None, iterations=1)
 
     def candidate_extraction(self):
+        self.cnts = cv2.findContours(self.edges, mode = cv2.RETR_EXTERNAL, method = cv2.CHAIN_APPROX_SIMPLE)
         cnts = cv2.findContours(self.edges, mode = cv2.RETR_EXTERNAL, method = cv2.CHAIN_APPROX_SIMPLE)
-        print(cnts[0][0])
         cnts = imutils.grab_contours(cnts)
         for (i, c) in enumerate(cnts):
             self.orig_label = contours.label_contour(self.image, c, i, color= [240, 0, 159])
         (cnts, boundingBoxes) = contours.sort_contours(cnts, method = "bottom-to-top")
-        clone = self.image.copy()
+        self.clone = self.image.copy()
         for (i, c) in enumerate(cnts):
-            self.sorted_label = contours.label_contour(clone, c, i, color= [240, 0, 159])
+            self.sorted_label = contours.label_contour(self.clone, c, i, color= [240, 0, 159])
 
     def size_filter(self):
-
+        for (i, c) in enumerate(self.cnts[1]):
+            rect = cv2.minAreaRect(c)
+            box = cv2.boxPoints(rect)
+            box = np.int0(box)
+            self.image = cv2.drawContours(self.imgage,[box],0,(0,0,255),2)
         pass
 
     def export(self):
@@ -164,8 +168,12 @@ class Preprocess:
                 self.show("edges", self.edges)
                 self.candidate_extraction()
                 self.show("cnts", self.orig_label)
+                if not self.clone is None:
+                    self.show("drawed", self.clone)
                 if not self.sorted_label is None:
                     self.show("cnts_sorted", self.sorted_label)
+                self.size_filter()
+                self.show("rectangles", self.image)
                 end = cv2.getTickCount()
                 #self.measure_perf(start,end)
                 if cv2.waitKey(1) & 0xFF == ord("q"):
@@ -177,8 +185,6 @@ def main():
     cap = Video(id = 1, camera_number = 0)
     loop = Preprocess(id = 1, video_instance = cap)
     loop.run()
-
-
 
 if __name__ == "__main__":
     main()
