@@ -56,6 +56,9 @@ class Video:
         else:
             print("Problem occured getting next frame")
 
+    def load_static_image(self):
+        pass
+
 class Preprocess:
     """An object representing the the preprocessing algorithm.
 
