@@ -1,0 +1,3 @@
+{
+    "files": ["dashboard.py","bre_preprocess.py","mainwindow.ui","camerafeed.py","grab_handle.py","test.ui","show_feed.py"]
+}
