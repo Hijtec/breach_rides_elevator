@@ -521,7 +521,7 @@ class Template:
 
     def order_buttons(self):
         """Grants buttons their columns and rows ad proper number"""
-        button_list = []
+        button_list = self.buttons_raw
         j = 0
         for i in self.buttons_raw:
             i.n_valid = self.seq_correct_old[j]
@@ -532,15 +532,15 @@ class Template:
         for row in self.rows:
             row_index +=1
             for item in row:
-                self.buttons_raw[item].row = row_index
+                button_list[item].row = row_index
         
         col_index = 0
         for col in self.cols:
             col_index +=1
             for item in col:
-                self.buttons_raw[item].col = col_index
+                button_list[item].col = col_index
         
-        self.buttons = self.buttons_raw
+        self.buttons = button_list
         for but in self.buttons:
             print(but.__dict__)
 
