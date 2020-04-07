@@ -18,6 +18,7 @@ class ComInst:
         mode:                       Either 'REQ_REP' or 'PUB_SUB', determines blocking/non-blocking communication
         address:                    An address for creation of communication instance
         instance:                   The communication object instance
+        name:                       Gets the hostname of the machine
 
     Methods:
         validate_input:             Validates the init input of class
@@ -90,11 +91,24 @@ class ComInst:
         """Creates a client communication object."""
         self.instance = imagezmq.ImageHub(open_port=self.address, mode=self.mode)
     
-    def send(self):
+    def send(self, msg):
         if self.direction == 'send':
+            self.instance.send_image(self.name, msg)
+        else:
+            raise TypeError("This object is not able to send a message.")
 
-        elif self.direction == 'recv':
+    def recv(self)
+        if self.direction == 'recv':
+            name, response = self.instance.recv_image()
+            return name, response
+        else:
+            raise TypeError("This object is not able to recieve a message")
 
+    def send_reply(self, msg):
+        if self.direction == 'send' and self.mode == 'REQ_REP':
+            self.instance.send_reply(b'OK')
+        else:
+            raise TypeError("This object is not able to send a reply")
 
 class Parameters:
     """An object initializing the parameters.
@@ -133,9 +147,7 @@ class Parameters:
     def update_pars(self):
         for k, com_inst in self.coms:
             if self.updateFlag[k] == True:
-                com_inst.send
+                com_inst.send()
 
-
-def super_com(pars):
+def create_parameters():
     pass
-
