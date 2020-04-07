@@ -2,7 +2,7 @@
 import os
 import sys
 import cv2
-import imagezmq
+import imagezmq_modified as imagezmq
 import time
 import queue
 from threading import Thread, Event

@@ -21,7 +21,7 @@ The communication interface is created as follows:
 import socket
 import time
 from imutils.video import VideoStream
-import imagezmq
+import imagezmq_modified as imagezmq
 
 def init_sender(address,mode):
     if not type(mode) == str:
