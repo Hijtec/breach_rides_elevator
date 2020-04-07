@@ -118,64 +118,37 @@
          <bool>false</bool>
         </property>
        </widget>
-       <widget class="QWidget" name="gridLayoutWidget">
+       <widget class="QPushButton" name="pre_adjbr_in_toggle_2">
         <property name="geometry">
          <rect>
-          <x>1110</x>
+          <x>670</x>
+          <y>40</y>
+          <width>75</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>INPUT</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QWidget" name="">
+        <property name="geometry">
+         <rect>
+          <x>820</x>
           <y>20</y>
-          <width>171</width>
-          <height>171</height>
+          <width>411</width>
+          <height>91</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="0">
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_2">
-             <item>
-              <widget class="QLabel" name="label_5">
-               <property name="text">
-                <string>Contrast</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QSlider" name="horizontalSlider_6">
-               <property name="maximum">
-                <number>100</number>
-               </property>
-               <property name="singleStep">
-                <number>1</number>
-               </property>
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QSpinBox" name="spinBox_3">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="suffix">
-                <string/>
-               </property>
-               <property name="maximum">
-                <number>100</number>
-               </property>
-               <property name="singleStep">
-                <number>1</number>
-               </property>
-               <property name="stepType">
-                <enum>QAbstractSpinBox::DefaultStepType</enum>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
+          <layout class="QVBoxLayout" name="pre_par1">
            <item>
             <widget class="QLabel" name="label_4">
              <property name="text">
@@ -214,26 +187,53 @@
            </item>
           </layout>
          </item>
+         <item row="0" column="1">
+          <layout class="QVBoxLayout" name="pre_par2_2">
+           <item>
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>Contrast</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSlider" name="horizontalSlider_7">
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="singleStep">
+              <number>1</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="spinBox_4">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="singleStep">
+              <number>1</number>
+             </property>
+             <property name="stepType">
+              <enum>QAbstractSpinBox::DefaultStepType</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
         </layout>
-       </widget>
-       <widget class="QPushButton" name="pre_adjbr_in_toggle_2">
-        <property name="geometry">
-         <rect>
-          <x>670</x>
-          <y>40</y>
-          <width>75</width>
-          <height>23</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>IN/OUT</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
        </widget>
       </widget>
       <widget class="QWidget" name="Greyscale">
@@ -402,70 +402,5 @@
   <tabstop>tabs</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>horizontalSlider_6</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>spinBox_3</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>708</x>
-     <y>220</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>711</x>
-     <y>239</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_3</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>horizontalSlider_6</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>743</x>
-     <y>242</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>742</x>
-     <y>220</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_2</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>horizontalSlider_5</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>697</x>
-     <y>155</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>690</x>
-     <y>125</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSlider_5</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>spinBox_2</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>767</x>
-     <y>124</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>766</x>
-     <y>156</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

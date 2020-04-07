@@ -210,11 +210,11 @@ class Template:
         self.priority_vh = None #True if counting by rows, false if counting by columns
         self.seq = None
         self.jump_button = False
-        self.rows = rows_ordered
-        self.cols = cols_ordered
+        
         self.buttons_raw = buttons_raw
         self.softmax_pred = softmax_pred
-        
+        self.rows = rows_ordered
+        self.cols = cols_ordered
 
         self.find_template_candidate()
         self.assign_template()
@@ -231,6 +231,7 @@ class Template:
         self.rank_v_rl = self.count_vh("right")
         
         self.n_ranks = [self.rank_h_lr, self.rank_h_rl, self.rank_v_lr, self.rank_v_rl]
+        print(self.n_ranks)
 
     def assign_template(self):
         """Assigns priority_XX to Template object.
@@ -603,7 +604,6 @@ class Panel:
 
 #Istance of Detection class
 empty_predictions = np.empty((15,3))
-print(empty_predictions)
 det = Detection(data_OCR,empty_predictions,but_w,but_h)
 #print(det.template.n_ranks,det.template.priority_lr,det.template.priority_vh, det.template.rows, det.template.cols, det.buttons_raw[5].n_raw)
 #print(det.template.seq, det.template.seq_correct)

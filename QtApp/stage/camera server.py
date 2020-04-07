@@ -23,13 +23,13 @@ import time
 from imutils.video import VideoStream
 import imagezmq
 
-def init_sender(adress,mode):
-    if not type(mode) == bool:
-        raise TypeError("Mode must be a boolean.")
-    if not type(adress) == str:
+def init_sender(address,mode):
+    if not type(mode) == str:
+        raise TypeError("Mode must be a string.")
+    if not type(address) == str:
         raise TypeError("Adress must be a string.")
     print(f"Establishing connection {adress} with REQ_REP={mode}")
-    sender = imagezmq.ImageSender(connect_to=adress,REQ_REP=mode)
+    sender = imagezmq.ImageSender(connect_to=address,REQ_REP=mode)
     return sender
 
 def user_interface_cam_ncon():
@@ -44,7 +44,7 @@ def user_interface_cam_ncon():
 def user_interface_add_mode(ncon, senders):
     for con in range(ncon):
         address = str(input(f"-----------------\nAddress of {con+1}. connection\n (eg.: tcp://localhost:5555) for REQ_REP\n (eg.: tcp://*:5555) for SUB_PUB\n"))
-        mode = str(input("Mode of connection (REQ_REP = True, SUB_PUB = False):"))
+        mode = str(input("Mode of connection (REQ_REP, SUB_PUB):"))
         if mode == "True":
             mode = True
         elif mode == "False":
@@ -56,8 +56,8 @@ def user_interface_add_mode(ncon, senders):
     return senders
 
 def add_mode_default():
-    print("Sending on address localhost:5555 with REQ_REP mode")
-    senders = imagezmq.ImageSender(connect_to='tcp://localhost:5555',REQ_REP=True)
+    print("Sending on address localhost:5555 with SUB_PUB mode")
+    senders = imagezmq.ImageSender(connect_to='tcp://*:5555',mode='PUB_SUB')
     return senders
 
 
