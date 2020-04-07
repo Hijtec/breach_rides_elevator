@@ -5,6 +5,7 @@
 A super_com is established that operates on PUB_SUB mode, tracks if there has been a change of parameter
 If there has been a change, all parameters will be updated
 """
+import socket
 import imagezmq_modified as imagezmq
 from threading import Thread, Event
 
@@ -30,12 +31,14 @@ class ComInst:
     Raises:
         ValueError                  When an invalid input has been detected
     """
-    def __init__(direction, port, mode):
+
+    def __init__(self, direction, port, mode):
         """Initializes the class and calls its methods."""
         self.direction = direction      #either 'send' or 'recv'
         self.port = port                #4digit number
         self.mode = mode                #either 'REQ_REP' or 'PUB_SUB'
         self.instance = None
+        self.name = socket.gethostname()
         
         self.validate_input()
         self.establish_connection()
@@ -86,11 +89,51 @@ class ComInst:
     def connect_recv(self):
         """Creates a client communication object."""
         self.instance = imagezmq.ImageHub(open_port=self.address, mode=self.mode)
-
     
+    def send(self):
+        if self.direction == 'send':
 
-    
+        elif self.direction == 'recv':
 
+
+class Parameters:
+    """An object initializing the parameters.
+
+    Attributes:
+        pars:                       Dictionary of settable parameters
+        def_pars:                   Dictionary of default parameters (set at init)
+        coms:                       Dictionary with setted connection instance
+        updateFlag:                 Dictionary of T/F values determining which 
+
+    Methods:
+        detect_update:
+        update_last_pars:
+        update_pars:
+
+    Raises:
+        ValueError                  When an invalid input has been detected
+    """
+
+    def __init__(self, pars, coms):
+        self.pars = pars
+        self.last_pars = pars
+        self.coms = coms
+        self.updateFlag = None
+
+    def detect_update(self):
+        self.updateFlag = {}
+        for k, v in self.pars:
+            if self.pars[k] != self.last_pars[k]:
+                updateFlag[k] = True
+        self.update_last_pars()
+
+    def update_last_pars(self):
+        self.last_pars = pars
+
+    def update_pars(self):
+        for k, com_inst in self.coms:
+            if self.updateFlag[k] == True:
+                com_inst.send
 
 
 def super_com(pars):
