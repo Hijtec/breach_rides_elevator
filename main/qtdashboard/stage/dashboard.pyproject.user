@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.11.2, 2020-04-09T23:39:30. -->
+<!-- Written by QtCreator 4.11.2, 2020-04-09T23:37:12. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -144,10 +144,10 @@
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">dashboard2</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.E:/GoogleDriveSync/BREACH_RIDES_ELEVATOR/breach_rides_elevator/breach_rides_elevator/main/qtdashboard/dashboard.py</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">E:/GoogleDriveSync/BREACH_RIDES_ELEVATOR/breach_rides_elevator/breach_rides_elevator/main/qtdashboard/dashboard.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.E:/GoogleDriveSync/BREACH_RIDES_ELEVATOR/breach_rides_elevator/breach_rides_elevator/main/qtdashboard/stage/dashboard.py</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">E:/GoogleDriveSync/BREACH_RIDES_ELEVATOR/breach_rides_elevator/breach_rides_elevator/main/qtdashboard/stage/dashboard.py</value>
     <value type="QString" key="PythonEditor.RunConfiguation.Interpreter">{f47880cc-66b6-4228-90af-92265f5130b4}</value>
-    <value type="QString" key="PythonEditor.RunConfiguation.Script">E:\GoogleDriveSync\BREACH_RIDES_ELEVATOR\breach_rides_elevator\breach_rides_elevator\main\qtdashboard\dashboard.py</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Script">E:\GoogleDriveSync\BREACH_RIDES_ELEVATOR\breach_rides_elevator\breach_rides_elevator\main\qtdashboard\stage\dashboard.py</value>
     <value type="QString" key="RunConfiguration.Arguments"></value>
     <value type="bool" key="RunConfiguration.Arguments.multi">false</value>
     <value type="QString" key="RunConfiguration.OverrideDebuggerStartup"></value>
@@ -157,7 +157,7 @@
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
     <value type="QString" key="RunConfiguration.WorkingDirectory"></value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">E:/GoogleDriveSync/BREACH_RIDES_ELEVATOR/breach_rides_elevator/breach_rides_elevator/main/qtdashboard</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">E:/GoogleDriveSync/BREACH_RIDES_ELEVATOR/breach_rides_elevator/breach_rides_elevator/main/qtdashboard/stage</value>
    </valuemap>
    <value type="int" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>

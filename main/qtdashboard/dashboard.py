@@ -18,7 +18,7 @@ class App():
     def __init__(self):
         self.app = QtWidgets.QApplication(sys.argv)
         self.ui_path = os.path.dirname(os.path.abspath(__file__))
-        self.form_class = uic.loadUiType(os.path.join(self.ui_path, "mainwindow.ui"))[0]
+        self.form_class = uic.loadUiType(os.path.join(self.ui_path, "uidesign/mainwindow.ui"))[0]
 App = App()
 
 class OwnImageWidget(QtWidgets.QWidget):
