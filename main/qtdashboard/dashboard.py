@@ -12,6 +12,7 @@ from PyQt5 import QtCore, QtGui, uic, QtWidgets
 
 import cv2
 import coms
+import settings
 
 class App():
     """An app instance with ui import"""
@@ -44,6 +45,22 @@ class OwnImageWidget(QtWidgets.QWidget):
         qtpainter.end()                 #Kills the QPainter instance
 
 class Dashboard(QtWidgets.QMainWindow, App.form_class):
+    """Main class that encompases the whole Dashboard GUI object.
+    Attributes:
+        image_hub
+        image_name
+        running
+        frame
+        open_subtab_now
+        open_subtab_last
+        open_tab_now
+        open_tab_last
+
+    Methods:
+        create_buttons_raw:         Creates a list of Button objects from raw data
+        create_panel:               Creates a slave Panel object
+    """
+
     def __init__(self, parent=None):
         QtWidgets.QMainWindow.__init__(self, parent)
         self.setupUi(self)
@@ -56,15 +73,15 @@ class Dashboard(QtWidgets.QMainWindow, App.form_class):
         self.pre_adjbr_toggle.toggled.connect(self.toggle_clicked)
         self.pre_adjbr_toggle.toggled.connect(self.set_qgroup_title)
         self.pre_adjbr_switch.toggled.connect(self.change_feed)
+        self.subtabs.currentChanged.connect(self.subtab_change)
+        self.tabs.currentChanged.connect(self.tab_change)
         #CUSTOM VARIABLES AND OBJECTS
         self.window_width = self.pre_ImgWidget.frameSize().width()
         self.window_height = self.pre_ImgWidget.frameSize().height()
         self.pre_ImgWidget = OwnImageWidget(self.pre_ImgWidget)
         #SCRIPT ALWAYS STARTS ON THESE
-        self.open_subtab_now = "AdjustBrightness"
-        self.open_subtab_last = "AdjustBrightness"
-        self.open_tab_now = "Preprocessing"
-        self.open_tab_last = "Preprocessing"
+        self.subtab = "AdjustBrightness"
+        self.tab= "Preprocessing"
         #INIT PARAMETER OBJECTS
         self.pre_bundles = self.init_params(self.open_subtab_now)
         #INIT COMMUNICATION OBJECTS
@@ -72,37 +89,37 @@ class Dashboard(QtWidgets.QMainWindow, App.form_class):
         #INIT TIMERS AND THEIR CALLS
         self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.update_frame)
-        self.timer.timeout.connect(self.read_par_values)
-        self.timer.timeout.connect(self.update_parameters)
         self.timer.start(1)
 
         self.slow_timer = QtCore.QTimer(self)
-        self.slow_timer.timeout.connect(self.tab_changed)
-        self.slow_timer.timeout.connect(self.subtab_changed)
+        self.slow_timer.timeout.connect(self.read_par_values)
+        self.slow_timer.timeout.connect(self.update_parameters)
         self.slow_timer.start(50)
 
     def change_feed(self):
         pass
     def opened_tab(self):
         pass
-    def tab_changed(self):
+    def tab_change(self):
         pass
 
-    def opened_subtab(self):
+    def tab_curr(self):
+        """Returns the current opened tab."""
+        tab_name_qstring = self.tab.currentWidget().objectName()
+        return tab_name_qstring
+
+    def subtab_curr(self):
         """Returns the current opened subtab."""
         subtab_name_qstring = self.subtabs.currentWidget().objectName()
         #subtab_name = subtab_name_qstring.data().decode('utf8'))
-        subtab_name = subtab_name_qstring
-        return subtab_name
-    
-    def subtab_changed(self):
+        return subtab_name_qstring
+        
+    def subtab_change(self):
         """Detects change of subtab, closes old parameters and initiates new ones."""
-        if self.open_subtab_last != self.open_subtab_now:
-            self.open_subtab_last = self.open_subtab_now
-            self.open_subtab_now = self.opened_subtab()
-            self.close_parameters()
-            self.init_params(self.open_subtab_now)
-
+        self.close_parameters()
+        self.subtab = self.subtab_curr()
+        self.init_params(self.subtab)
+        
     def toggle_clicked(self):
         """Handles the toggle button."""
         if self.pre_adjbr_toggle.isChecked() is True:
@@ -139,20 +156,20 @@ class Dashboard(QtWidgets.QMainWindow, App.form_class):
         self.read_next()
         self.pre_input_img.setTitle(self.img_name)
 
-
     def read_next(self):
         """Read next frame based on dashboard status."""
         if self.open_subtab_now == "AdjustBrightness":
-            self.img_name, self.frame = self.camera_read_next()
+            self.img_name, self.frame = self.camera_read_next(self.image_hub)
 
     def camera_read_next(self, image_hub=None):
         """Reads the next frame from camera using image_hub object."""
-        if self.image_hub is None:
-            self.image_hub = coms.ComInst(direction='recv', port=5555, mode='REQ_REP')
+        if image_hub is None:
+            image_hub = coms.ComInst(direction='recv', port=5555, mode='REQ_REP')
 
         if self.running:
-            src_name, src_image = self.image_hub.recv()
-            self.image_hub.send_reply()
+            src_name, src_image = image_hub.recv()
+            #ISSUE: if camera is not initiated, this freezes the module
+            image_hub.send_reply()
 
         if not self.running:
             src_name = "FEED NOT RUNNING"
@@ -164,15 +181,15 @@ class Dashboard(QtWidgets.QMainWindow, App.form_class):
         bundles = []
         if subtab == "AdjustBrightness":
             bundle_brightness = {"name":"pre_BRIGHTNESS", "value":0, 
-                                "direction":"send", "port":1001, "mode":"REQ_REP"}
+                                 "direction":"send", "port":1001, "mode":"REQ_REP"}
             bundle_contrast = {"name":"pre_CONTRAST", "value":0,
-                                "direction":"send", "port":1002, "mode":"REQ_REP"}
+                               "direction":"send", "port":1002, "mode":"REQ_REP"}
             bundles = [bundle_brightness, bundle_contrast]
         else:
             raise ValueError("Invalid tab argument.")
         return bundles
 
-    def create_params(self,bundles):
+    def create_params(self, bundles):
         """Handles the creation of parameters and communication dictionaries."""
         par_dict = {}
         com_dict = {}
@@ -199,7 +216,7 @@ class Dashboard(QtWidgets.QMainWindow, App.form_class):
         for __, cominst in self.params.coms.items():
             cominst.close()
 
-    def closeEvent(self,__):
+    def closeEvent(self, __):
         """Handles what happens after the window is closed."""
         self.running = False
         self.close_parameters()
