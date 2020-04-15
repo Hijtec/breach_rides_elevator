@@ -67,7 +67,7 @@
        <attribute name="title">
         <string>Adjust Brightness --&gt;</string>
        </attribute>
-       <widget class="QGroupBox" name="pre_input_img">
+       <widget class="QGroupBox" name="prepro_img">
         <property name="geometry">
          <rect>
           <x>20</x>
@@ -88,7 +88,7 @@
         <property name="flat">
          <bool>false</bool>
         </property>
-        <widget class="QWidget" name="pre_ImgWidget" native="true">
+        <widget class="QWidget" name="prepro_ImgWidget" native="true">
          <property name="geometry">
           <rect>
            <x>0</x>
@@ -99,7 +99,7 @@
          </property>
         </widget>
        </widget>
-       <widget class="QPushButton" name="pre_adjbr_toggle">
+       <widget class="QPushButton" name="prepro_adjbr_toggle">
         <property name="geometry">
          <rect>
           <x>670</x>
@@ -134,7 +134,7 @@
          <item row="0" column="0">
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
-            <widget class="QLabel" name="pre_brightness">
+            <widget class="QLabel" name="prepro_brightness">
              <property name="text">
               <string>Brightness</string>
              </property>
@@ -144,7 +144,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QSlider" name="pre_brightness_slider">
+            <widget class="QSlider" name="prepro_brightness_slider">
              <property name="maximum">
               <number>100</number>
              </property>
@@ -157,7 +157,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="pre_brightness_box">
+            <widget class="QSpinBox" name="prepro_brightness_box">
              <property name="suffix">
               <string> %</string>
              </property>
@@ -174,7 +174,7 @@
          <item row="1" column="0">
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
-            <widget class="QLabel" name="pre_contrast">
+            <widget class="QLabel" name="prepro_contrast">
              <property name="text">
               <string>Contrast</string>
              </property>
@@ -184,7 +184,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QSlider" name="pre_contrast_slider">
+            <widget class="QSlider" name="prepro_contrast_slider">
              <property name="maximum">
               <number>100</number>
              </property>
@@ -197,7 +197,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="pre_contrast_box">
+            <widget class="QSpinBox" name="prepro_contrast_box">
              <property name="enabled">
               <bool>true</bool>
              </property>
@@ -219,7 +219,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QPushButton" name="pre_adjbr_switch">
+       <widget class="QPushButton" name="prepro_adjbr_toggle_feed">
         <property name="geometry">
          <rect>
           <x>670</x>
@@ -229,12 +229,15 @@
          </rect>
         </property>
         <property name="text">
-         <string>IN/OUT</string>
+         <string>INPUT</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
         </property>
         <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="flat">
          <bool>false</bool>
         </property>
        </widget>
@@ -288,8 +291,8 @@
      <widget class="QDialogButtonBox" name="buttonBox">
       <property name="geometry">
        <rect>
-        <x>530</x>
-        <y>500</y>
+        <x>1020</x>
+        <y>630</y>
         <width>261</width>
         <height>31</height>
        </rect>
@@ -304,85 +307,13 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QCheckBox" name="checkBox">
+     <widget class="QTableWidget" name="tableWidget">
       <property name="geometry">
        <rect>
-        <x>660</x>
-        <y>320</y>
-        <width>70</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>CheckBox</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton">
-      <property name="geometry">
-       <rect>
-        <x>660</x>
-        <y>290</y>
-        <width>75</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>PushButton</string>
-      </property>
-     </widget>
-     <widget class="QSlider" name="horizontalSlider">
-      <property name="geometry">
-       <rect>
-        <x>440</x>
-        <y>290</y>
-        <width>160</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-     <widget class="QSpinBox" name="spinBox">
-      <property name="geometry">
-       <rect>
-        <x>480</x>
-        <y>220</y>
-        <width>42</width>
-        <height>22</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="comboBox">
-      <property name="geometry">
-       <rect>
-        <x>330</x>
-        <y>410</y>
-        <width>69</width>
-        <height>22</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label1">
-      <property name="geometry">
-       <rect>
-        <x>190</x>
-        <y>280</y>
-        <width>47</width>
-        <height>13</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Mylabel</string>
-      </property>
-     </widget>
-     <widget class="QOpenGLWidget" name="openGLWidget">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>40</y>
-        <width>300</width>
-        <height>200</height>
+        <x>0</x>
+        <y>0</y>
+        <width>1291</width>
+        <height>621</height>
        </rect>
       </property>
      </widget>
@@ -407,9 +338,9 @@
  <resources/>
  <connections>
   <connection>
-   <sender>pre_brightness_box</sender>
+   <sender>prepro_brightness_box</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>pre_brightness_slider</receiver>
+   <receiver>prepro_brightness_slider</receiver>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -423,9 +354,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>pre_brightness_slider</sender>
+   <sender>prepro_brightness_slider</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>pre_brightness_box</receiver>
+   <receiver>prepro_brightness_box</receiver>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -439,9 +370,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>pre_contrast_box</sender>
+   <sender>prepro_contrast_box</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>pre_contrast_slider</receiver>
+   <receiver>prepro_contrast_slider</receiver>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -455,9 +386,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>pre_contrast_slider</sender>
+   <sender>prepro_contrast_slider</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>pre_contrast_box</receiver>
+   <receiver>prepro_contrast_box</receiver>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">

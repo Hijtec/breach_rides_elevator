@@ -107,17 +107,21 @@ class Preprocess:
 
     def adjust_brightness_dynamic(self):
         self.image = imutils.adjust_brightness_contrast(self.image,0,0)
+        return self.image
     
     def grayscale(self):
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        return self.image
 
     def median_filter(self, kernelsize = 3):
         self.image = cv2.medianBlur(self.image, kernelsize)
+        return self.image
 
     def canny_edge_extraction(self, sigma = 0.33):
         self.edges = imutils.auto_canny(self.image, sigma)
         self.edges = cv2.dilate(self.edges, None, iterations=2)
         self.edges = cv2.erode(self.edges, None, iterations=1)
+        return self.edges
 
     def candidate_extraction(self):
         self.cnts = cv2.findContours(self.edges, mode = cv2.RETR_EXTERNAL, method = cv2.CHAIN_APPROX_SIMPLE)

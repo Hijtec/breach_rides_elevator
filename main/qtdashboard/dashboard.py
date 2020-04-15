@@ -13,6 +13,7 @@ from PyQt5 import QtCore, QtGui, uic, QtWidgets
 import cv2
 import coms
 import settings
+from .opencv import bre_preprocess, bre_postprocess
 
 class App():
     """An app instance with ui import"""
@@ -69,23 +70,24 @@ class Dashboard(QtWidgets.QMainWindow, App.form_class):
         self.image_name = "UNKNOWN SOURCE"
         self.running = False
         self.frame = None
+        self.show_feed = True
         #CUSTOM SLOTS AND SIGNALS
-        self.pre_adjbr_toggle.toggled.connect(self.toggle_clicked)
-        self.pre_adjbr_toggle.toggled.connect(self.set_qgroup_title)
-        self.pre_adjbr_switch.toggled.connect(self.change_feed)
+        self.prepro_adjbr_toggle.toggled.connect(self.toggle_clicked)
+        self.prepro_adjbr_toggle.toggled.connect(self.set_qgroup_title)
+        self.prepro_adjbr_toggle_feed.toggled.connect(self.toggle_feed)
         self.subtabs.currentChanged.connect(self.subtab_change)
         self.tabs.currentChanged.connect(self.tab_change)
         #CUSTOM VARIABLES AND OBJECTS
-        self.window_width = self.pre_ImgWidget.frameSize().width()
-        self.window_height = self.pre_ImgWidget.frameSize().height()
-        self.pre_ImgWidget = OwnImageWidget(self.pre_ImgWidget)
+        self.window_width = self.prepro_ImgWidget.frameSize().width()
+        self.window_height = self.prepro_ImgWidget.frameSize().height()
+        self.prepro_ImgWidget = OwnImageWidget(self.prepro_ImgWidget)
         #SCRIPT ALWAYS STARTS ON THESE
         self.subtab = "AdjustBrightness"
-        self.tab= "Preprocessing"
+        self.tab = "Preprocessing"
         #INIT PARAMETER OBJECTS
-        self.pre_bundles = self.init_params(self.open_subtab_now)
+        self.prepro_bundles = self.init_params(self.subtab)
         #INIT COMMUNICATION OBJECTS
-        self.params = self.create_params(self.pre_bundles)
+        self.params = self.create_params(self.prepro_bundles)
         #INIT TIMERS AND THEIR CALLS
         self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.update_frame)
@@ -122,20 +124,27 @@ class Dashboard(QtWidgets.QMainWindow, App.form_class):
         
     def toggle_clicked(self):
         """Handles the toggle button."""
-        if self.pre_adjbr_toggle.isChecked() is True:
+        if self.prepro_adjbr_toggle.isChecked() is True:
             self.running = True
-            self.pre_adjbr_toggle.setText("Init...")
+            self.prepro_adjbr_toggle.setText("Init...")
 
-        elif self.pre_adjbr_toggle.isChecked() is False:
+        elif self.prepro_adjbr_toggle.isChecked() is False:
             self.running = False
-            self.pre_adjbr_toggle.setText("Cam OFF")
-            
+            self.prepro_adjbr_toggle.setText("Cam OFF")
+
+    def toggle_feed(self):
+        """Handles the toggle between input/output feed."""
+        if self.prepro_adjbr_toggle_feed.isChecked() is True:
+            self.show_feed = True
+        elif self.prepro_adjbr_toggle_feed.isChecked() is False:
+            self.show_feed = False
+
     def update_frame(self):
         """Updates the ImgWidget with img from camera."""
         self.read_next()
         if self.frame is not None:
             img = self.frame
-            self.pre_adjbr_toggle.setText("Cam ON")
+            self.prepro_adjbr_toggle.setText("Cam ON")
             img_height, img_width, __ = img.shape
             #Scale the image to fit the window
             scale_w = float(self.window_width) / float(img_width)
@@ -149,17 +158,34 @@ class Dashboard(QtWidgets.QMainWindow, App.form_class):
             height, width, bits_per_color = img.shape
             bits_per_line = bits_per_color * width
             image = QtGui.QImage(img.data, width, height, bits_per_line, QtGui.QImage.Format_RGB888)
-            self.pre_ImgWidget.setImage(image)
+            self.prepro_ImgWidget.setImage(image)
     
     def set_qgroup_title(self):
         """Sets the qgroub Title"""
         self.read_next()
-        self.pre_input_img.setTitle(self.img_name)
+        self.prepro_img.setTitle(self.img_name)
 
     def read_next(self):
         """Read next frame based on dashboard status."""
-        if self.open_subtab_now == "AdjustBrightness":
-            self.img_name, self.frame = self.camera_read_next(self.image_hub)
+        if self.subtab == "AdjustBrightness":
+            if self.show_feed is True:
+                self.img_name, self.frame = self.camera_read_next(self.image_hub)
+            elif self.show_feed is False:
+                cap = bre_preprocess.Video(id = 1, camera_number = 0)
+                img_prepro = bre_preprocess.Preprocess(id = 1, video_instance = cap)
+                self.img_name = "AdjustBrightness"
+                self.frame = img_prepro.adjust_brightness_dynamic()
+
+    def image_read_next(self, instance):
+        if self.running:
+            src_name, src_image = instance.recv()
+            #ISSUE: if camera is not initiated, this freezes the module
+            instance.send_reply()
+
+        if not self.running:
+            src_name = "FEED NOT RUNNING"
+            src_image = None
+        return src_name, src_image
 
     def camera_read_next(self, image_hub=None):
         """Reads the next frame from camera using image_hub object."""
@@ -180,13 +206,13 @@ class Dashboard(QtWidgets.QMainWindow, App.form_class):
         """Returns predetermined parameters based on input tab"""
         bundles = []
         if subtab == "AdjustBrightness":
-            bundle_brightness = {"name":"pre_BRIGHTNESS", "value":0, 
+            bundle_brightness = {"name":"prepro_BRIGHTNESS", "value":0, 
                                  "direction":"send", "port":1001, "mode":"REQ_REP"}
-            bundle_contrast = {"name":"pre_CONTRAST", "value":0,
+            bundle_contrast = {"name":"prepro_CONTRAST", "value":0,
                                "direction":"send", "port":1002, "mode":"REQ_REP"}
             bundles = [bundle_brightness, bundle_contrast]
         else:
-            raise ValueError("Invalid tab argument.")
+            print("Params not implemented yet!")
         return bundles
 
     def create_params(self, bundles):
@@ -205,11 +231,11 @@ class Dashboard(QtWidgets.QMainWindow, App.form_class):
 
     def read_par_values(self):
         """Reads the value off the doubleBoxes."""
-        if self.open_subtab_now == "AdjustBrightness":
+        if self.subtab == "AdjustBrightness":
             #Brightness par (0.00 to 1.00)
-            self.params.pars.update({"pre_BRIGHTNESS": float(self.pre_brightness_box.value()/100)})
+            self.params.pars.update({"prepro_BRIGHTNESS": float(self.prepro_brightness_box.value()/100)})
             #Contrast par (0.00 to 1.00)
-            self.params.pars.update({"pre_CONTRAST": float(self.pre_contrast_box.value()/100)})
+            self.params.pars.update({"prepro_CONTRAST": float(self.prepro_contrast_box.value()/100)})
     
     def close_parameters(self):
         """Closes all parameter connections."""
