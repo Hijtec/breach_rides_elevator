@@ -139,8 +139,8 @@ class Preprocess:
             rect = cv2.minAreaRect(c)
             box = cv2.boxPoints(rect)
             box = np.int0(box)
-            self.image = cv2.drawContours(self.imgage,[box],0,(0,0,255),2)
-        pass
+            self.image = cv2.drawContours(self.image,[box],0,(0,0,255),2)
+        return self.image
 
     def export(self):
         pass

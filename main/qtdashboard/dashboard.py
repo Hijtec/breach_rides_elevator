@@ -11,7 +11,7 @@ import sys
 from PyQt5 import QtCore, QtGui, uic, QtWidgets
 
 import cv2
-import coms
+from .common import coms
 import settings
 from .opencv import bre_preprocess, bre_postprocess
 
@@ -100,10 +100,12 @@ class Dashboard(QtWidgets.QMainWindow, App.form_class):
 
     def change_feed(self):
         pass
-    def opened_tab(self):
-        pass
+
     def tab_change(self):
-        pass
+        """Detects change of tab, closes old parameters and initiates new ones."""
+        self.close_parameters()
+        self.subtab = self.subtab_curr()
+        self.init_params(self.subtab)
 
     def tab_curr(self):
         """Returns the current opened tab."""
