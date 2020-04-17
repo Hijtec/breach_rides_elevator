@@ -11,9 +11,10 @@ import sys
 from PyQt5 import QtCore, QtGui, uic, QtWidgets
 
 import cv2
-from .common import coms
+from main.common import coms
+from main.opencv import preprocess, bre_postprocess
 import settings
-from .opencv import bre_preprocess, bre_postprocess
+
 
 class App():
     """An app instance with ui import"""
@@ -142,7 +143,7 @@ class Dashboard(QtWidgets.QMainWindow, App.form_class):
             self.show_feed = False
 
     def update_frame(self):
-        """Updates the ImgWidget with img from camera."""
+        """Updates the ImgWidget with the next image."""
         self.read_next()
         if self.frame is not None:
             img = self.frame

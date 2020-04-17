@@ -121,58 +121,18 @@
        <widget class="QWidget" name="gridLayoutWidget">
         <property name="geometry">
          <rect>
-          <x>1037</x>
+          <x>807</x>
           <y>20</y>
-          <width>161</width>
-          <height>191</height>
+          <width>391</width>
+          <height>101</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout">
          <property name="bottomMargin">
           <number>5</number>
          </property>
-         <item row="0" column="0">
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
-            <widget class="QLabel" name="prepro_brightness">
-             <property name="text">
-              <string>Brightness</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSlider" name="prepro_brightness_slider">
-             <property name="maximum">
-              <number>100</number>
-             </property>
-             <property name="singleStep">
-              <number>1</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="prepro_brightness_box">
-             <property name="suffix">
-              <string> %</string>
-             </property>
-             <property name="prefix">
-              <string/>
-             </property>
-             <property name="maximum">
-              <number>100</number>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
          <item row="1" column="0">
-          <layout class="QVBoxLayout" name="verticalLayout_2">
+          <layout class="QVBoxLayout" name="prepro_contrast_layout">
            <item>
             <widget class="QLabel" name="prepro_contrast">
              <property name="text">
@@ -212,6 +172,46 @@
              </property>
              <property name="stepType">
               <enum>QAbstractSpinBox::DefaultStepType</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="1" column="1">
+          <layout class="QVBoxLayout" name="prepro_brightness_layout">
+           <item>
+            <widget class="QLabel" name="prepro_brightness">
+             <property name="text">
+              <string>Brightness</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSlider" name="prepro_brightness_slider">
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="singleStep">
+              <number>1</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="prepro_brightness_box">
+             <property name="suffix">
+              <string> %</string>
+             </property>
+             <property name="prefix">
+              <string/>
+             </property>
+             <property name="maximum">
+              <number>100</number>
              </property>
             </widget>
            </item>
