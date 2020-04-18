@@ -109,15 +109,15 @@ class ComInst:
             raise TypeError("This object is not able to send a message.")
 
     def recv(self):
-        """Checks whether the instance can recieve, if it does, recieves a message."""
+        """Checks whether the instance can receive, if it does, receives a message."""
         if self.direction == 'recv':
             name, response = self.instance.recv_image()
             return name, response
         else:
-            raise TypeError("This object is not able to recieve a message")
+            raise TypeError("This object is not able to receive a message")
 
     def send_reply(self, msg=b'OK'):
-        """Checks whether the instance can recieve and is in REQ_REP mode. If so, sends a reply."""
+        """Checks whether the instance can receive and is in REQ_REP mode. If so, sends a reply."""
         if self.direction == 'recv' and self.mode == 'REQ_REP':
             self.instance.send_reply(msg)
         else:
